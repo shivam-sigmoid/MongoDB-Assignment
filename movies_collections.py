@@ -1,6 +1,7 @@
 import pymongo
 
 
+
 def task_one(topN, collections):
     pipeline = [
         {"$project": {"_id": 0, "imdb.rating": 1, "title": 1}},
@@ -149,7 +150,7 @@ def task_ten(topN, genres, collections):
     return res
 
 
-def task_eleven(collections,genres):
+def task_eleven(collections,genres,topN):
     pipeline = [
         {
             "$match": {
@@ -160,8 +161,11 @@ def task_eleven(collections,genres):
         {
             "$group":
                 {"_id": "$cast",
-                 "no_films": {"$sum": 1}
-                 }}
+                 "no_of_films": {"$sum": 1}
+                 }
+        },
+        {"$limit": topN}
+
     ]
     li = collections.aggregate(pipeline)
     res = []
@@ -204,8 +208,9 @@ def movies_driver(db):
     taskTen = task_ten(topN, "Documentary", collections)
     print(taskTen)
     print("Find top `N` movies for each genre with the highest IMDB rating")
-    taskEleven = task_eleven(collections,"Documentary")
-    print(taskEleven)
+    taskEleven = task_eleven(collections,"Documentary",topN)
+    for task in taskEleven:
+        print(task)
 
 
 if __name__ == "__main__":
