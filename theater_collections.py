@@ -20,8 +20,17 @@ def task_one_with_mongo_query(collections):
 
 
 def task_two(collections, coord):
-    # ToDo
-    pass
+    pipeline = [
+        {"$group": {"_id": {"city": "$location.address.city"}}},
+        {"$match": {"location.geo.coordinates[0]": coord[0], "location.geo.coordinates[1]": coord[1]}},
+        {"$limit": 10},
+        {"$project": {"city_name": "$_id.city", "_id": 0}}
+    ]
+    li = collections.aggregate(pipeline)
+    res = []
+    for i in li:
+        res.append(i)
+    return res
 
 
 def theater_driver(db):
@@ -37,9 +46,9 @@ def theater_driver(db):
     print(taskOneWithMongoQuery)
     # Top 10 theatres nearby given coordinates
     print("Top 10 theatres nearby given coordinates")
-    # coord = ['-93.24565', '44.85466']
-    # taskTwo = task_two(collections, coord)
-    # print(taskTwo)
+    coord = ['-93.24565', '44.85466']
+    taskTwo = task_two(collections, coord)
+    print(taskTwo)
 
 
 if __name__ == "__main__":
