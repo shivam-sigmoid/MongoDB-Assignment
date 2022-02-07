@@ -150,22 +150,13 @@ def task_ten(topN, genres, collections):
     return res
 
 
-def task_eleven(collections,genres,topN):
+def task_eleven(collections,topN):
     pipeline = [
-        {
-            "$match": {
-                "genres": genres
-            }
-        },
-
-        {
-            "$group":
-                {"_id": "$cast",
-                 "no_of_films": {"$sum": 1}
-                 }
-        },
+        {"$unwind": "$genres"},
+        {"$project": {"rating": "$imdb.rating", "genres": "$genres", "title": "$title"}},
+        {"$group": {"_id": {"genres": "$genres", "max_rating": {"$max": "$rating"}, "title": {"first": "$title"}}}},
+        {"$sort": {"_id.max_rating": -1}},
         {"$limit": topN}
-
     ]
     li = collections.aggregate(pipeline)
     res = []
@@ -208,10 +199,10 @@ def movies_driver(db):
     taskTen = task_ten(topN, "Documentary", collections)
     print(taskTen)
     print("Find top `N` movies for each genre with the highest IMDB rating")
-    taskEleven = task_eleven(collections,"Documentary",topN)
+    taskEleven = task_eleven(collections,topN)
+    # print(taskEleven)
     for task in taskEleven:
         print(task)
-
 
 if __name__ == "__main__":
     # Connecting to database
