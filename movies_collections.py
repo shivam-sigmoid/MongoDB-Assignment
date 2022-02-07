@@ -14,6 +14,19 @@ def task_one(topN, collections):
         res.append(i)
     return res
 
+# def task_one_different_way(topN, collections):
+#     pipeline = [
+#         {'$project': {'title': '$title', 'rating': '$imdb.rating'}},
+#         {'$match': {'rating': {'$exists': True, '$ne': ''}}},
+#         {'$group': {'_id': {'rating': '$rating', 'title': '$title'}}},
+#         {'$sort': {'_id.rating': -1}},
+#         {'$limit': topN}
+#     ]
+#     li = collections.aggregate(pipeline)
+#     res = []
+#     for i in li:
+#         res.append(i)
+#     return res
 
 def task_two(topN, given_year, collections):
     pipeline = [
@@ -203,7 +216,10 @@ def movies_driver(db):
     # print(taskEleven)
     for task in taskEleven:
         print(task)
+    # res = task_one_different_way(topN,collections)
+    # print(res)
 
+    
 if __name__ == "__main__":
     # Connecting to database
     client = pymongo.MongoClient('mongodb://localhost:27017/')
