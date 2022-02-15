@@ -219,7 +219,7 @@ def movies_driver(db):
     # res = task_one_different_way(topN,collections)
     # print(res)
 
-    
+
 if __name__ == "__main__":
     # Connecting to database
     client = pymongo.MongoClient('mongodb://localhost:27017/')

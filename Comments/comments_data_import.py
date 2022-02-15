@@ -13,7 +13,7 @@ collection = db['comments']
 
 item_list = []
 
-f = open('/Users/shivamraj/Documents/Learning/pyMongo/comments.json', 'r')
+f = open('/Comments/comments.json', 'r')
 lines = f.readlines()
 for line in lines:
     hash = json.loads(line)

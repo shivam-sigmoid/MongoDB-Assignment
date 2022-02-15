@@ -19,18 +19,18 @@ def task_one_with_mongo_query(collections):
     return res
 
 
-def task_two(collections, coord):
+def task_two(collections,coords):
     pipeline = [
-        {"$group": {"_id": {"city": "$location.address.city"}}},
-        {"$match": {"location.geo.coordinates[0]": coord[0], "location.geo.coordinates[1]": coord[1]}},
-        {"$limit": 10},
-        {"$project": {"city_name": "$_id.city", "_id": 0}}
+        {'$geoNear': {'near': {'type': 'Point', 'coordinates': coords},
+                      'maxDistance': 1000000, 'distanceField': 'dist.calculated', 'includeLocs': 'dist.location',
+                      'distanceMultiplier': 0.001, 'spherical': True}},
+        {'$project': {'theaterId': 1, '_id': 0, 'city': '$location.address.city', 'distance': '$dist.calculated'}},
+        {'$limit': 10}
     ]
-    li = collections.aggregate(pipeline)
-    res = []
-    for i in li:
-        res.append(i)
-    return res
+
+    results = collections.aggregate(pipeline)
+    for result in results:
+        print(f"City - {result['city']} ; TheaterId - {result['theaterId']} ; Distance - {result['distance']}")
 
 
 def theater_driver(db):
@@ -47,8 +47,8 @@ def theater_driver(db):
     # Top 10 theatres nearby given coordinates
     print("Top 10 theatres nearby given coordinates")
     coord = ['-93.24565', '44.85466']
-    taskTwo = task_two(collections, coord)
-    print(taskTwo)
+    task_two(collections,coord)
+    # print(taskTwo)
 
 
 if __name__ == "__main__":
